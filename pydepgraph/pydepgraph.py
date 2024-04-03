@@ -13,7 +13,7 @@ from pydepgraph.graph_dependencies import draw_graph
 def pydepgraph(
     package,
     output_file,
-    deps_cache_file=None,
+    cache_file=None,
     figsize=None,
     refresh=False,
     no_cache=False,
@@ -27,7 +27,7 @@ def pydepgraph(
         The name of the package to create the dependency graph for.
     output_file : str
         The name of the file to save the dependency graph to.
-    deps_cache_file : str, optional
+    cache_file : str, optional
         The name of the file to cache the dependencies to. Defaults to None.
     figsize : tuple of int, optional
         Explicitly set the dimensions (width and height) of the graph in inches.
@@ -39,7 +39,7 @@ def pydepgraph(
         Do not use the cache file for dependencies.
     """
     deptree = get_deptree_with_sizes(
-        package, deps_cache_file=deps_cache_file, refresh=refresh, no_cache=no_cache
+        package, cache_file=cache_file, refresh=refresh, no_cache=no_cache
     )
     draw_graph(deptree, output_file, figsize=figsize)
 

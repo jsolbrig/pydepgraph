@@ -213,7 +213,7 @@ def add_package_sizes(
 
 
 def get_deptree_with_sizes(
-    package_name, deps_cache_file=None, refresh=False, no_cache=False
+    package_name, cache_file=None, refresh=False, no_cache=False
 ):
     """
     Get the dependency tree for a given package with package sizes.
@@ -223,7 +223,7 @@ def get_deptree_with_sizes(
     package_name : str
         The name of the package.
 
-    deps_cache_file : str, optional
+    cache_file : str, optional
         The file path to the dependencies cache file. If provided, the function will try
         to load the dependency tree from this file. If the file is not found, the
         function will collect the dependency tree and save it to this file.
@@ -244,7 +244,7 @@ def get_deptree_with_sizes(
     Raises
     ------
     FileNotFoundError
-        If the provided `deps_cache_file` is not found.
+        If the provided `cache_file` is not found.
 
     Notes
     -----
@@ -252,7 +252,7 @@ def get_deptree_with_sizes(
     sizes to each node in the tree. The package sizes are calculated based on the size
     of the package files.
 
-    If `deps_cache_file` is provided, the function will try to load the dependency tree
+    If `cache_file` is provided, the function will try to load the dependency tree
     from this file. If the file is not found or `no_cache` is True, the function will
     collect the dependency tree and save it to this file.
 
@@ -265,13 +265,13 @@ def get_deptree_with_sizes(
     {'name': 'numpy', 'size': 1024, 'dependencies': [{'name': 'scipy', 'size': 512,
     'dependencies': []}]}
     """
-    if deps_cache_file and not no_cache:
+    if cache_file and not no_cache:
         deptree = None
 
         # Load the dependency tree from the cache file unless we want to refresh it
         if not refresh:
             try:
-                with open(deps_cache_file, "r") as file:
+                with open(cache_file, "r") as file:
                     deptree = json.load(file)[package_name]
             except (FileNotFoundError, KeyError):
                 pass
@@ -287,12 +287,12 @@ def get_deptree_with_sizes(
         # Save the dependency tree to the cache file
         # Each package's dependencies are stored under a new key in the cache file
         try:
-            with open(deps_cache_file, "r") as file:
+            with open(cache_file, "r") as file:
                 cache_deptree = json.load(file)
         except FileNotFoundError:
             cache_deptree = {}
         cache_deptree[package_name] = deptree
-        with open(deps_cache_file, "w") as file:
+        with open(cache_file, "w") as file:
             json.dump(cache_deptree, file, indent=2)
 
     # If no cache file is provided or we want to ignore the cache
