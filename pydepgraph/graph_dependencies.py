@@ -120,7 +120,7 @@ def calculate_figure_size(graph):
     Notes
     -----
     The figure size is calculated based on the number of nodes in the graph.
-    The base width and height are set to 8 and 6, respectively, for small graphs.
+    The base width and height are set to 2 and 1, respectively, for small graphs.
     The size is increased based on the number of nodes using a scaling factor of 0.1.
     The maximum size is capped at 100 for width and 40 for height.
 
@@ -133,7 +133,7 @@ def calculate_figure_size(graph):
     (8.5, 6.6)
     """
     num_nodes = len(graph.nodes())
-    base_width, base_height = 8, 6  # Base size for small graphs
+    base_width, base_height = 2, 1  # Base size for small graphs
     scaling_factor = 0.4  # Increase size based on the number of nodes
 
     # Cap the size to not exceed a maximum
@@ -143,7 +143,7 @@ def calculate_figure_size(graph):
     return (extra_width, extra_height)
 
 
-def draw_graph(deptree, save_path="deptree.png"):
+def draw_graph(deptree, save_path="deptree.png", figsize=None):
     """
     Draw the dependency graph.
 
@@ -153,6 +153,9 @@ def draw_graph(deptree, save_path="deptree.png"):
         The dependency tree represented as a dictionary.
     save_path : str, optional
         The file path to save the graph image (default is "deptree.png").
+    figsize : tuple, optional
+        The width and height of the figure in inches. If None, a reasonable figsize will
+        be calculated based on the number of nodes in the graph (default is None).
     """
     print("Creating graph")
     graph = create_graph(deptree)
@@ -163,7 +166,9 @@ def draw_graph(deptree, save_path="deptree.png"):
     print("Rescaling layout")
     pos = nx.rescale_layout_dict(pos, scale=3)
 
-    plt.figure(figsize=calculate_figure_size(graph))
+    if figsize is None:
+        figsize = calculate_figure_size(graph)
+    plt.figure(figsize=figsize)
 
     print("Drawing nodes")
     colors = [color for color in nx.get_node_attributes(graph, "color").values()]
@@ -179,7 +184,3 @@ def draw_graph(deptree, save_path="deptree.png"):
     print("Saving")
     plt.axis("on")
     plt.savefig(save_path)
-
-
-with open("matplotlib_deptree.json", "r") as dtree_data:
-    dtree = json.loads(dtree_data.read())
