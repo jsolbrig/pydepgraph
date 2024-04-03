@@ -256,7 +256,7 @@ def get_deptree_with_sizes(package_name, deps_cache_file=None):
         try:
             with open(deps_cache_file, "r") as file:
                 deptree = json.load(file)[package_name]
-        except FileNotFoundError:
+        except (FileNotFoundError, KeyError):
             # Collect the dependency tree
             deptree = get_deptree(package_name)
 
@@ -264,7 +264,14 @@ def get_deptree_with_sizes(package_name, deps_cache_file=None):
             add_package_sizes(deptree)
 
             if deps_cache_file:
-                cache_deptree = {package_name: deptree}
+                try:
+                    with open(deps_cache_file, "r") as file:
+                        cache_deptree = json.load(file)
+                except FileNotFoundError:
+                    cache_deptree = {}
+
+                cache_deptree[package_name] = deptree
+
                 with open(deps_cache_file, "w") as file:
                     json.dump(cache_deptree, file, indent=2)
 
